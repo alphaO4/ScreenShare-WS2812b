@@ -1,0 +1,17 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+      - '*v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+
+- name: Add msbuild to PATH
+  uses: microsoft/setup-msbuild@v1.1
+  with:
+    msbuild-architecture: x64
+
+- name: Build app for release
+  run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
