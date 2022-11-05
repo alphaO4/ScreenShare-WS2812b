@@ -1,14 +1,20 @@
-name: Build
+name: AutoRelease
 
 on:
   push:
     branches: [ master ]
 
+jobs:
 
-- name: Add msbuild to PATH
-  uses: microsoft/setup-msbuild@v1.1
-  with:
-    msbuild-architecture: x64
+  release:
 
-- name: Build app for release
-  run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        msbuild-architecture: x64
+
+    - name: Build app for release
+      run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
