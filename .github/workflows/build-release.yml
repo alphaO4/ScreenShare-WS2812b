@@ -8,10 +8,12 @@ jobs:
   release:
     runs-on: windows-latest
     steps:
-    - name: Add msbuild to PATH
-      uses: microsoft/setup-msbuild@v1.1
-      with:
-        msbuild-architecture: x64
+      - uses: actions/checkout@v2
 
-    - name: Build app for release
-      run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
+      - name: Build app for release
+        run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
