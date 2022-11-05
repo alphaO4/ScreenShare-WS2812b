@@ -14,4 +14,4 @@ jobs:
         with:
           msbuild-architecture: x64
       - name: Build app for release
-        run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild src\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
