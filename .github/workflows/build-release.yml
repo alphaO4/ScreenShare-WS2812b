@@ -63,7 +63,8 @@ jobs:
       - name: Load Release File from build job
         uses: actions/download-artifact@v1
         with:
-          name: release_file  
+          name: release_file
+          path: /home/runner/work/
       - name: Get Release File Name & Upload URL
         id: get_release_info
         shell: bash
