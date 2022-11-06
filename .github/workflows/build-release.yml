@@ -77,6 +77,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release_info.outputs.upload_url }}
-          asset_path: ScreenShare_WS2812b.exe
+          asset_path: /home/runner/work/ScreenShare_WS2812b.exe
           asset_name: ScreenShare_WS2812b.exe
           asset_content_type: application/vnd.microsoft.portable-executable
