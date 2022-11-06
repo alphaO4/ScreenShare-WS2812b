@@ -3,9 +3,37 @@ name: AutoRelease
 on:
   push:
     branches: [ master ]
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  release:
+
+  createrelease:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+    - name: Output Release URL File
+      run: echo "${{ steps.create_release.outputs.upload_url }}" > release_url.txt
+    - name: Save Release URL File for publish
+      uses: actions/upload-artifact@v1
+      with:
+        name: release_url
+        path: release_url.txt
+
+
+  build:
+    name: Build packages
+    needs: createrelease
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
@@ -14,4 +42,41 @@ jobs:
         with:
           msbuild-architecture: x64
       - name: Build app for release
-        run: msbuild D:\a\ScreenShare-WS2812b\ScreenShare-WS2812b\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
+        run: msbuild D:\a\ScreenShare-WS2812b\ScreenShare-WS2812b\ScreenShare_WS2812b\ScreenShare_WS2812b.csproj -t:rebuild -verbosity:diag -property:Configuration=Release -p:OutputPath=D:\a\ScreenShare-WS2812b\ScreenShare-WS2812b\ScreenShare_WS2812b
+      
+      - name: Save Release File for publish
+        uses: actions/upload-artifact@v1
+        with:
+          name: release_file
+          path: D:\a\ScreenShare-WS2812b\ScreenShare-WS2812b\ScreenShare_WS2812b\ScreenShare_WS2812b.exe
+      
+      
+  release:
+    name: Push the Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Load Release URL File from release job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_url
+      - name: Load Release File from build job
+        uses: actions/download-artifact@v1
+        with:
+          name: release_file  
+      - name: Get Release File Name & Upload URL
+        id: get_release_info
+        shell: bash
+        run: |
+          value=`cat release_url/release_url.txt`
+          echo ::set-output name=upload_url::$value
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release_info.outputs.upload_url }}
+          asset_path: ./dist/ScreenShare_WS2812b.exe
+          asset_name: ScreenShare_WS2812b.exe
+          asset_content_type: application/vnd.microsoft.portable-executable
