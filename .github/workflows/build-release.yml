@@ -3,8 +3,7 @@ name: AutoRelease
 on:
   push:
     branches: [ master ]
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
 
 jobs:
 
@@ -12,12 +11,13 @@ jobs:
     name: Create Release
     runs-on: ubuntu-latest
     steps:
+
     - name: Create Release
       id: create_release
       uses: "marvinpinto/action-automatic-releases@latest"
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        title: ScreenShare Release ${{ github.ref }}
+        title:  ${{ github.ref }}
         automatic_release_tag: "latest"
         draft: false
         prerelease: false
